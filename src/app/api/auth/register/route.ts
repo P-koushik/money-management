@@ -1,84 +1,77 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
+// import { Request, Response } from "express";
+// import { z } from "zod";
 
-import {
-  applySessionCookie,
-  createSessionToken,
-  hashPassword,
-} from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+// // Zod Schema for validation
+// const register_schema = z.object({
+//   body: z.object({
+//     uid: z.string().min(1, "UID is required"),
+//     email: z.string().email("Valid email is required"),
+//     name: z.string().optional(),
+//     photoURL: z.string().optional(),
+//   }),
+// });
 
-const registerSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Name must be at least 2 characters long")
-    .max(100, "Name must be at most 100 characters long")
-    .transform((value) => value.trim())
-    .optional(),
-  email: z
-    .string({ error: "Email is required" })
-    .min(1, "Email is required")
-    .email("Please provide a valid email address")
-    .transform((value) => value.toLowerCase()),
-  password: z
-    .string({ error: "Password is required" })
-    .min(8, "Password must be at least 8 characters long"),
-});
+// export const register_user = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     // Validate request
+//     const validated_data = register_schema.parse(req);
+//     const { uid, email, name, photoURL } = validated_data.body;
 
-export async function POST(request: Request) {
-  const body = await request.json().catch(() => null);
+//     // First check if user exists by uid
+//     let user = await User.findOne({ uid });
+//     let isNewUser = false;
 
-  const parsed = registerSchema.safeParse(body);
+//     if (!user) {
+//       // If not found by uid, check by email
+//       user = await User.findOne({ email });
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      {
-        error: "Invalid request",
-        issues: parsed.error.flatten(),
-      },
-      { status: 400 },
-    );
-  }
+//       if (!user) {
+//         // Create new user if not found by either uid or email
+//         user = new User({
+//           uid,
+//           email,
+//           name: name ,
+//           photoURL: photoURL ,
+//           // Don't set a default role - let user choose later
+//         });
+//         await user.save();
+//         isNewUser = true;
+//       } else {
+//         // User exists by email but not uid, update the uid
+//         user.uid = uid;
+//         if (name) user.name = name;
+//         if (photoURL) user.photoURL = photoURL;
+//         await user.save();
+//         isNewUser = false;
+//       }
+//     } else {
+//       // User exists by uid, update other fields if provided
+//       if (name) user.name = name;
+//       if (photoURL) user.photoURL = photoURL;
+//       await user.save();
+//       isNewUser = false;
+//     }
 
-  const { email, password, name } = parsed.data;
+//     res.status(201).json({
+//       message: "User synced successfully",
+//       data: {
+//         user,
+//         isNew: isNewUser,
+//         hasRole: !!user.role
+//       }
+//     });
+//   } catch (error: unknown) {
+//     if (error instanceof z.ZodError) {
+//       console.error("Validation error:", error.errors);
+//       res.status(400).json({
+//         error: "Invalid request data",
+//         details: error.errors
+//       });
+//       return;
+//     }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-
-  if (existingUser) {
-    return NextResponse.json(
-      { error: "A user with this email already exists" },
-      { status: 409 },
-    );
-  }
-
-  const passwordHash = await hashPassword(password);
-
-  const user = await prisma.user.create({
-    data: {
-      email,
-      passwordHash,
-      name: name ?? null,
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  const token = createSessionToken({
-    userId: user.id,
-    email: user.email,
-    name: user.name,
-  });
-
-  const response = NextResponse.json({ user }, { status: 201 });
-  applySessionCookie(response, token);
-
-  return response;
-}
+//     const errorMessage = error instanceof Error ? error.message : String(error);
+//     console.error("Sync error:", errorMessage);
+//     res.status(500).json({ error: "Failed to sync user" });
+//   }
+// };

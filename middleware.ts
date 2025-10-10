@@ -1,8 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
-import { env } from "@/config/env";
+const PUBLIC_ROUTES = new Set(["/login", "/signup", "/"]);
 
-const PUBLIC_ROUTES = new Set(["/login", "/signup"]);
+const AUTH_ROUTES = new Set(["/login", "/signup"]);
 const AUTH_API_PREFIX = "/api/auth";
 
 function isStaticAsset(pathname: string) {
@@ -25,26 +25,27 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const sessionToken = request.cookies.get(env.auth.cookieName)?.value ?? null;
-  const isAuthenticated = Boolean(sessionToken);
+  // Check for Firebase token in cookies
+  const firebaseToken = request.cookies.get("token")?.value ?? null;
+  const isAuthenticated = Boolean(firebaseToken);
 
-  if (pathname.startsWith("/api")) {
+  // For API routes, require authentication
+  if (pathname.startsWith("/api") && !pathname.startsWith(AUTH_API_PREFIX)) {
     if (!isAuthenticated) {
-      return new NextResponse(
-        JSON.stringify({ error: "Unauthorized" }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     return NextResponse.next();
   }
 
   const isPublicRoute = PUBLIC_ROUTES.has(pathname);
+  const isAuthRoute = AUTH_ROUTES.has(pathname);
 
-  if (!isAuthenticated && !isPublicRoute) {
+  // Redirect unauthenticated users to login (except for public routes)
+  if (!isAuthenticated && !isPublicRoute && !isAuthRoute) {
     const loginUrl = new URL("/login", request.url);
 
     if (pathname !== "/") {
@@ -54,7 +55,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (isAuthenticated && isPublicRoute) {
+  // Redirect authenticated users away from login/signup pages
+  if (isAuthenticated && isPublicRoute && pathname !== "/") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
@@ -62,5 +64,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest).*)",
+  ],
 };
