@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { useAuth } from "@/contexts/AuthContext";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +28,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { register, loginWithGoogle } = useAuth();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -49,7 +46,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     }
 
     try {
-      await register(email, password, name);
+      // await register(email, password, name);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
@@ -62,7 +59,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     setError("");
 
     try {
-      await loginWithGoogle();
+      // await loginWithGoogle();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google signup failed");
     } finally {

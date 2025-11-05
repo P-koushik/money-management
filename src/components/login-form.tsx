@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { useAuth } from "@/contexts/AuthContext";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +22,7 @@ import { Input } from "@/components/ui/input";
 
 import { cn } from "@/lib/utils";
 
-export function LoginForm({
+export function   LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
@@ -32,15 +31,13 @@ export function LoginForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { login, loginWithGoogle } = useAuth();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      await login(email, password);
+      // await login(email, password);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
@@ -53,7 +50,7 @@ export function LoginForm({
     setError("");
 
     try {
-      await loginWithGoogle();
+      // await loginWithGoogle();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google login failed");
     } finally {
