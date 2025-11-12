@@ -2,9 +2,8 @@ import { DataTable } from "@/components/data-table";
 
 export default function OwePage() {
   return (
-    <div >
+    <div>
       <DataTable data={[]} />
     </div>
   );
 }
-

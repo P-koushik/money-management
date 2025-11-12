@@ -13,15 +13,12 @@ export default function AppLayout({
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
-   >
+    >
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />
-        <div className="pt-4">
-          {children}
-        </div>
+        <div className="pt-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
 }
-

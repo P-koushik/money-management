@@ -1,7 +1,9 @@
 "use client";
 
-import { type LucideIcon } from "lucide-react";
+import Link from "next/link";
+
 import { IconCirclePlusFilled } from "@tabler/icons-react";
+import { type LucideIcon } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -10,7 +12,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 
 export function NavMain({
   items,

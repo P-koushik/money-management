@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,7 +21,7 @@ import { Input } from "@/components/ui/input";
 
 import { cn } from "@/lib/utils";
 
-export function   LoginForm({
+export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
