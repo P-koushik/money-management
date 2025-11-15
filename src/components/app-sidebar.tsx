@@ -10,6 +10,7 @@ import {
   Settings2,
   SquareTerminal,
   CreditCard,
+  MessageCircle,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -49,24 +50,9 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "/playground",
+      title: "Dashboard",
+      url: "/dashboard",
       icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Owe",
@@ -74,27 +60,14 @@ const data = {
       icon: CreditCard,
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
+      title: "Conversation",
+      url: "/conversation",
+      icon: MessageCircle,
+    },
+    {
+      title: "Expenditure",
+      url: "/expenditure",
+      icon: CreditCard,
     },
   ],
 };
